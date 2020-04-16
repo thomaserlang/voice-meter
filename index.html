@@ -29,15 +29,7 @@
 <body>
     <div id="circle"><div id="text"></div></div>
 <script>
-    navigator.mediaDevices.getUserMedia({audio: {
-            "mandatory": {
-                "googEchoCancellation": "false",
-                "googAutoGainControl": "false",
-                "googNoiseSuppression": "false",
-                "googHighpassFilter": "false"
-            },
-            "optional": []
-        }})
+    navigator.mediaDevices.getUserMedia({audio: true})
         .then(function(stream) {
             var AudioContext = window.AudioContext || window.webkitAudioContext; 
             audioContext = new AudioContext();
@@ -45,33 +37,32 @@
             microphone = audioContext.createMediaStreamSource(stream);
             proc = audioContext.createScriptProcessor(2048, 1, 1);
 
-
+            analyser.smoothingTimeConstant = 0.8;
+            analyser.fftSize = 1024;
             microphone.connect(analyser);
             analyser.connect(proc);
             proc.connect(audioContext.destination);
-            var averaging = 0.8;
-            var volume = 0;
-            proc.onaudioprocess = function(event) {
-                var buf = event.inputBuffer.getChannelData(0);
-                var bufLength = buf.length;
-                var sum = 0;
-                var x;
-                for (var i=0; i<bufLength; i++) {
-                    x = buf[i];
-                    sum += x * x;
+
+            proc.onaudioprocess = function() {
+                var array = new Uint8Array(analyser.frequencyBinCount);
+                analyser.getByteFrequencyData(array);
+                var values = 0;
+
+                var length = array.length;
+                for (var i = 0; i < length; i++) {
+                    values += (array[i]);
                 }
-                var rms =  Math.sqrt(sum / bufLength);
-                volume = Math.max(rms, volume*averaging);
-                var val = (Math.round(100*volume))                
+
+                var average = values / length;
+                var val = Math.round(average - 40);
                 if (val > 20) {
                     document.getElementById('circle').style.backgroundColor = '#DA0000';
-                } else if (val > 10) {                
+                } else if (val > -10) {                
                     document.getElementById('circle').style.backgroundColor = '#ECDC28';
                 } else {                
                     document.getElementById('circle').style.backgroundColor = '#1FAB08';
                 }
                 document.getElementById('text').innerHTML = val;
-
             }
         }).catch(function(err) {
             alert(err);
