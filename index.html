@@ -33,12 +33,13 @@
       audio: true
     },
     function (stream) {
-        audioContext = new AudioContext();
+        var a = window.AudioContext || window.webkitAudioContext;
+        audioContext = new a();
         analyser = audioContext.createAnalyser();
         microphone = audioContext.createMediaStreamSource(stream);
         proc = audioContext.createScriptProcessor(2048, 1, 1);
 
-        analyser.smoothingTimeConstant = 0.8;
+        analyser.smoothingTimeConstant = 0.9;
         analyser.fftSize = 1024;
         microphone.connect(analyser);
         analyser.connect(proc);
@@ -56,9 +57,9 @@
 
             var average = values / length;
             var val = Math.round(average - 40);
-            if (val > 40) {
+            if (val > 20) {
                 document.getElementById('circle').style.backgroundColor = '#DA0000';
-            } else if (val > 0) {                
+            } else if (val > -10) {                
                 document.getElementById('circle').style.backgroundColor = '#ECDC28';
             } else {                
                 document.getElementById('circle').style.backgroundColor = '#1FAB08';
