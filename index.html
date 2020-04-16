@@ -31,6 +31,7 @@
 <script>
     navigator.mediaDevices.getUserMedia({audio: true})
         .then(function(stream) {
+            var AudioContext = window.AudioContext || window.webkitAudioContext; 
             audioContext = new AudioContext();
             analyser = audioContext.createAnalyser();
             microphone = audioContext.createMediaStreamSource(stream);
