@@ -29,15 +29,7 @@
 <body>
     <div id="circle"><div id="text"></div></div>
 <script>
-    navigator.mediaDevices.getUserMedia({audio: {
-            "mandatory": {
-                "googEchoCancellation": "false",
-                "googAutoGainControl": "false",
-                "googNoiseSuppression": "false",
-                "googHighpassFilter": "false"
-            },
-            "optional": []
-        }})
+    navigator.mediaDevices.getUserMedia({audio: true})
         .then(function(stream) {
             var AudioContext = window.AudioContext || window.webkitAudioContext; 
             audioContext = new AudioContext();
@@ -49,7 +41,7 @@
             microphone.connect(analyser);
             analyser.connect(proc);
             proc.connect(audioContext.destination);
-            var averaging = 0.8;
+            var averaging = 0.95;
             var volume = 0;
             proc.onaudioprocess = function(event) {
                 var buf = event.inputBuffer.getChannelData(0);
