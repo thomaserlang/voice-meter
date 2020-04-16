@@ -7,6 +7,8 @@
     body {
         height: 100vh;
         display: flex;
+        justify-content: center;
+        align-items: center;
     }
     #circle {
         width: 50vh;
@@ -14,14 +16,18 @@
 
         background-color: #818181;
         border-radius: 50%;
+        display: flex;
+    }
+    #text {
+        font-size: 32px;
         margin: auto;
-
+        font-family: Helvetica, Arial, sans-serif;
     }
 </style>
 </head>
 
 <body>
-    <div id="circle"></div>
+    <div id="circle"><div id="text"></div></div>
 <script>
   navigator.getUserMedia({
       audio: true
@@ -49,13 +55,15 @@
             }
 
             var average = values / length;
-            if (Math.round(average - 40) > 40) {
+            var val = Math.round(average - 40);
+            if (val > 40) {
                 document.getElementById('circle').style.backgroundColor = '#DA0000';
-            } else if (Math.round(average - 40) > 0) {                
+            } else if (val > 0) {                
                 document.getElementById('circle').style.backgroundColor = '#ECDC28';
             } else {                
                 document.getElementById('circle').style.backgroundColor = '#1FAB08';
             }
+            document.getElementById('text').innerHTML = val;
         }
 
     },
